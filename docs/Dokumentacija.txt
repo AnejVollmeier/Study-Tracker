@@ -1,0 +1,28 @@
+ER-Diagram : 
+Tip_Osebe : 
+id_Tip_Osebe
+naziv
+
+Oseba :
+id_Osebe
+ime
+priimek
+*email
+uporabnisko ime
+geslo
+datum_prijave
+
+Seja :
+id_Seje
+datetime
+
+Predmet : 
+id_Predmeta
+ime
+datum_ustanovitve
+datum_zakljucka
+
+Poglavje : 
+id_Poglavja
+ime
+datum_ustanovitve
