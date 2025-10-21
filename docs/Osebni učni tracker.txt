@@ -1,0 +1,19 @@
+Osebni učni tracker:
+
+Spletna aplikacija omogoča enostavno organizacijo učnih aktivnosti in spremljanje napredka skozi čas, s čimer se povečuje učinkovitost in struktura učenja.
+
+Omogoča uporabnikom registracijo in prijavo.
+
+Uporabnik lahko beleži svoje učne seje, vključno s:predmetom, trajanjem učenja, opisom opravljenega dela ter datumom.
+
+Aplikacija omogoča prikaz statistike in grafov, ki prikazujejo napredek uporabnika po predmetih ali časovnih obdobjih.
+
+Omogočen je izvoz podatkov v PDF in Excel za enostavno shranjevanje, tiskanje ali nadaljnjo obdelavo.
+
+Po prijavi se uporabniku prikazuje dnevni motivacijski citat ali nasvet, ki spodbuja redno učenje.
+
+Podatkovna baza, ki hrani vse podatke, bo postavljena v Docker kontejner, kar omogoča enostaven zagon, prenosljivost in lažje razvojno okolje.
+
+Dodatne ideje:
+gmail obvestila vsak teden
+razlicni tipi uporabnikov
