@@ -55,7 +55,7 @@ CONSTRAINT fk_poglavje_predmet FOREIGN KEY (TK_predmet) REFERENCES predmet(id_pr
 CREATE TABLE seja (
 id_seje        INT PRIMARY KEY AUTO_INCREMENT,
 zacetek        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-trajanje_min   INT NOT NULL CHECK (trajanje_min >= 0),
+trajanje_min   INT NULL CHECK (trajanje_min >= 0),
 TK_osebe       INT NOT NULL,
 TK_predmeta    INT NOT NULL,
 TK_poglavje    INT NULL,
