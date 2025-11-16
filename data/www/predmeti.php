@@ -1,11 +1,11 @@
-<?php 
-session_start();
+<?php require_once("header2.php"); ?>
 
-if(!isset($_SESSION['user_id'])){
-    session_destroy();
-    header("Location: login.php");
-    exit();
-}else{
-    echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
-}
-?>
+<main class="mt-4">
+    <div class="container">
+    </div>
+</main>
+
+<?php require_once("footer.html"); ?>
+
+</body>
+</html>

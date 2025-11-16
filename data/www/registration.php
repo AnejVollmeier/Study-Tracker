@@ -1,5 +1,11 @@
 <?php
 include_once("db.php");
+require_once("config.php");
+
+if (isset($_SESSION['user_id'])) {
+    header('Location: predmeti.php');
+    exit();
+}
 
 $errors = [];
 $success = '';
@@ -54,7 +60,7 @@ if($_SERVER["REQUEST_METHOD"] === 'POST'){
     <title>Registracija</title>
 </head>
     <body>
-    <?php require_once("header1.html");?>
+    <?php require_once("header1.php");?>
         <main class="mt-1 mb-1">
         <div class="container login-container">
             <div class="row justify-content-center align-items-center min-vh-100">
