@@ -51,8 +51,9 @@ $name = htmlspecialchars($_SESSION['username']);
     </button>
 
       <div class="collapse navbar-collapse" id="mainNavbar">
-      <div class="w-100 text-center">
-        <a class="nav-link active text-white fw-bold fs-5 d-inline-block" aria-current="page" href="predmeti.php">Vsi predmeti</a>
+      <div class="w-100 d-flex justify-content-center align-items-center gap-4">
+        <a class="nav-link active text-white fw-bold fs-5" aria-current="page" href="predmeti.php">Vsi predmeti</a>
+        <a class="nav-link active text-white fw-bold fs-5" aria-current="page" href="dodaj_predmet.php">Dodaj predmet</a>
       </div>
 
       <div class="d-lg-none w-100 text-center mt-2">
