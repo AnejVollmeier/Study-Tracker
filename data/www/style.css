@@ -4,6 +4,16 @@
   justify-content: center;
 }
 
+.navbar .nav-link {
+  color: white !important;
+  font-weight: bold;
+  margin: 0 15px;
+}
+
+.navbar .nav-link:hover {
+  background-color: #1a5690 !important;
+}
+
 .navbar-nav .nav-link {
   color: white !important;
   font-weight: bold;
