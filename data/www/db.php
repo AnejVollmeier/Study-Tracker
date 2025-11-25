@@ -1,7 +1,7 @@
 <?php
 $host = 'podatkovna-baza';
 $dbname = 'StudyTracker';
-$user = 'root'; 
+$user = 'root';
 $pass = 'superVarnoGeslo';
 
 try {
@@ -10,4 +10,3 @@ try {
 } catch (PDOException $e) {
 	die("Napaka pri povezavi na bazo: " . $e->getMessage());
 }
-?>

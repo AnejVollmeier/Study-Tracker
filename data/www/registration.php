@@ -10,8 +10,8 @@ if (isset($_SESSION['user_id'])) {
 $errors = [];
 $success = '';
 
-if($_SERVER["REQUEST_METHOD"] === 'POST'){
-    
+if ($_SERVER["REQUEST_METHOD"] === 'POST') {
+
     $firstName = trim($_POST['firstName']);
     $lastName = trim($_POST['lastName']);
     $email = trim($_POST['email']);
@@ -19,29 +19,29 @@ if($_SERVER["REQUEST_METHOD"] === 'POST'){
     $password = $_POST['password'];
     $confirmPassword = $_POST['confirmPassword'];
     $wantsEmail = isset($_POST['contactMethod']);
-    
-    if($password === $confirmPassword){
+
+    if ($password === $confirmPassword) {
         $hashed = password_hash($password, PASSWORD_BCRYPT);
     } else {
         $errors[] = 'Gesli se ne ujemata.';
     }
-    
-    if(empty($errors)){
-        
+
+    if (empty($errors)) {
+
         $stmt = $pdo->prepare("SELECT COUNT(*) AS sum FROM oseba WHERE uporabnisko_ime = ? OR email = ?");
         $stmt->execute([$username, $email]);
         $result = $stmt->fetch();
-        
-        if($result['sum'] > 0){
+
+        if ($result['sum'] > 0) {
             $errors[] = 'Uporabniško ime ali email že obstaja.';
         } else {
-            
+
             //(1 = email_yes, 2 = email_no)
             $tipId = $wantsEmail ? 1 : 2;
-            
+
             $insert = $pdo->prepare("INSERT INTO oseba (ime, priimek, email, uporabnisko_ime, geslo_hash, TK_tip_osebe) VALUES (?, ?, ?, ?, ?, ?)");
             $insert->execute([$firstName, $lastName, $email, $username, $hashed, $tipId]);
-            
+
             $success = 'Registracija uspešna. Sedaj se lahko prijavite.';
         }
     }
@@ -50,6 +50,7 @@ if($_SERVER["REQUEST_METHOD"] === 'POST'){
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -61,9 +62,10 @@ if($_SERVER["REQUEST_METHOD"] === 'POST'){
     <link rel="stylesheet" href="style.css">
     <title>Registracija</title>
 </head>
-    <body>
-    <?php require_once("header1.html");?>
-        <main class="mt-1 mb-1">
+
+<body>
+    <?php require_once("header1.html"); ?>
+    <main class="mt-1 mb-1">
         <div class="container login-container">
             <div class="row justify-content-center align-items-center min-vh-100">
                 <div class="col-md-8 col-lg-6">
@@ -76,24 +78,24 @@ if($_SERVER["REQUEST_METHOD"] === 'POST'){
                             <h3 class="mb-0 fw-bold">Registracija</h3>
                             <p class="mb-0 opacity-75">Ustvarite nov račun</p>
                         </div>
-                        
+
                         <div class="card-body p-5">
                             <!-- Register Form -->
-                            <?php if(!empty($errors)): ?>
+                            <?php if (!empty($errors)): ?>
                                 <div class="alert alert-danger">
                                     <ul class="mb-0">
-                                        <?php foreach($errors as $err): ?>
+                                        <?php foreach ($errors as $err): ?>
                                             <li><?php echo htmlspecialchars($err); ?></li>
                                         <?php endforeach; ?>
                                     </ul>
                                 </div>
                             <?php endif; ?>
-                            <?php if($success): ?>
+                            <?php if ($success): ?>
                                 <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
                                 <script>
                                     setTimeout(function() {
                                         window.location.href = 'login.php';
-                                    }, 3000);
+                                    }, 1500);
                                 </script>
                             <?php endif; ?>
                             <form id="registerForm" method="post" action="registration.php">
@@ -103,21 +105,21 @@ if($_SERVER["REQUEST_METHOD"] === 'POST'){
                                         <label for="firstName" class="form-label fw-semibold">
                                             <i class="bi bi-person-fill text-primary me-2"></i>Ime
                                         </label>
-                         <input type="text" class="form-control" 
-                             id="firstName" name="firstName"
-                             value="<?php echo isset($firstName) ? htmlspecialchars($firstName) : ''; ?>"
-                             placeholder="Vnesite ime"
-                             required>
+                                        <input type="text" class="form-control"
+                                            id="firstName" name="firstName"
+                                            value="<?php echo isset($firstName) ? htmlspecialchars($firstName) : ''; ?>"
+                                            placeholder="Vnesite ime"
+                                            required>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="lastName" class="form-label fw-semibold">
                                             <i class="bi bi-person-fill text-primary me-2"></i>Priimek
                                         </label>
-                         <input type="text" class="form-control" 
-                             id="lastName" name="lastName"
-                             value="<?php echo isset($lastName) ? htmlspecialchars($lastName) : ''; ?>"
-                             placeholder="Vnesite priimek"
-                             required>
+                                        <input type="text" class="form-control"
+                                            id="lastName" name="lastName"
+                                            value="<?php echo isset($lastName) ? htmlspecialchars($lastName) : ''; ?>"
+                                            placeholder="Vnesite priimek"
+                                            required>
                                     </div>
                                 </div>
 
@@ -130,11 +132,11 @@ if($_SERVER["REQUEST_METHOD"] === 'POST'){
                                         <span class="input-group-text bg-light border-end-0">
                                             <i class="bi bi-envelope"></i>
                                         </span>
-                         <input type="email" class="form-control border-start-0 ps-0" 
-                             id="email" name="email"
-                             value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>"
-                             placeholder="vas@email.com"
-                             required>
+                                        <input type="email" class="form-control border-start-0 ps-0"
+                                            id="email" name="email"
+                                            value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>"
+                                            placeholder="vas@email.com"
+                                            required>
                                     </div>
                                 </div>
 
@@ -147,11 +149,11 @@ if($_SERVER["REQUEST_METHOD"] === 'POST'){
                                         <span class="input-group-text bg-light border-end-0">
                                             <i class="bi bi-person"></i>
                                         </span>
-                         <input type="text" class="form-control border-start-0 ps-0" 
-                             id="username" name="username"
-                             value="<?php echo isset($username) ? htmlspecialchars($username) : ''; ?>"
-                             placeholder="Izberite uporabniško ime"
-                             required>
+                                        <input type="text" class="form-control border-start-0 ps-0"
+                                            id="username" name="username"
+                                            value="<?php echo isset($username) ? htmlspecialchars($username) : ''; ?>"
+                                            placeholder="Izberite uporabniško ime"
+                                            required>
                                     </div>
                                 </div>
 
@@ -165,10 +167,10 @@ if($_SERVER["REQUEST_METHOD"] === 'POST'){
                                             <span class="input-group-text bg-light border-end-0">
                                                 <i class="bi bi-key"></i>
                                             </span>
-                          <input type="password" class="form-control border-start-0 border-end-0 ps-0" 
-                              id="password" name="password"
-                              placeholder="Vnesite geslo"
-                              required>
+                                            <input type="password" class="form-control border-start-0 border-end-0 ps-0"
+                                                id="password" name="password"
+                                                placeholder="Vnesite geslo"
+                                                required>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -179,10 +181,10 @@ if($_SERVER["REQUEST_METHOD"] === 'POST'){
                                             <span class="input-group-text bg-light border-end-0">
                                                 <i class="bi bi-key"></i>
                                             </span>
-                          <input type="password" class="form-control border-start-0 border-end-0 ps-0" 
-                              id="confirmPassword" name="confirmPassword"
-                              placeholder="Ponovite geslo"
-                              required>
+                                            <input type="password" class="form-control border-start-0 border-end-0 ps-0"
+                                                id="confirmPassword" name="confirmPassword"
+                                                placeholder="Ponovite geslo"
+                                                required>
                                         </div>
                                     </div>
                                 </div>
@@ -215,7 +217,7 @@ if($_SERVER["REQUEST_METHOD"] === 'POST'){
                                 <!-- Login Link -->
                                 <div class="text-center">
                                     <p class="mb-0">
-                                        Že imate račun? 
+                                        Že imate račun?
                                         <a href="login.php" class="text-decoration-none fw-semibold">
                                             Prijavite se
                                         </a>
@@ -224,7 +226,7 @@ if($_SERVER["REQUEST_METHOD"] === 'POST'){
                             </form>
                         </div>
                     </div>
-                 </div>
+                </div>
             </div>
         </div>
     </main>
@@ -244,10 +246,10 @@ if($_SERVER["REQUEST_METHOD"] === 'POST'){
                         <div class="col-12">
                             <h6>1. Sprejemanje pogojev</h6>
                             <p class="text-muted">Z registracijo se strinjate s temi pogoji uporabe Study-Tracker platforme.</p>
-                            
+
                             <h6>2. Račun in varnost</h6>
                             <p class="text-muted">Odgovorni ste za varnost svojega računa in gesla. Takoj sporočite vsako nepooblaščeno uporabo.</p>
-                            
+
                             <h6>3. Zasebnost</h6>
                             <p class="text-muted">Vaši osebni podatki so zaščiteni v skladu z našo politiko zasebnosti.</p>
                         </div>
@@ -261,9 +263,9 @@ if($_SERVER["REQUEST_METHOD"] === 'POST'){
             </div>
         </div>
     </div>
-    <?php include_once("footer.html");?>
+    <?php include_once("footer.html"); ?>
 
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
 
+</html>
