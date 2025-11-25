@@ -53,17 +53,17 @@ $name = htmlspecialchars($_SESSION['username']);
     </button>
 
       <div class="collapse navbar-collapse" id="mainNavbar">
-      <div class="w-100 d-flex justify-content-center align-items-center gap-4">
-        <a class="nav-link active text-white fw-bold fs-5" aria-current="page" href="predmeti.php">Vsi predmeti</a>
-        <a class="nav-link active text-white fw-bold fs-5" aria-current="page" href="dodajPredmet.php">Dodaj predmet</a>
-      </div>
+        <div class="w-100 d-flex flex-column flex-lg-row justify-content-center align-items-center gap-3 py-2">
+          <a class="nav-link active text-white fw-bold fs-5 d-block d-lg-inline text-center" aria-current="page" href="predmeti.php">Vsi predmeti</a>
+          <a class="nav-link active text-white fw-bold fs-5 d-block d-lg-inline text-center" aria-current="page" href="dodajPredmet.php">Dodaj predmet</a>
 
-      <div class="d-lg-none w-100 text-center mt-2">
-        <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
-          <button type="submit" name="odjava" class="btn btn-danger fw-bold text-white">Odjava</button>
-        </form>
+          <div class="d-lg-none text-center mt-2 w-100">
+            <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" class="d-inline-block">
+              <button type="submit" name="odjava" class="btn btn-danger fw-bold text-white">Odjava</button>
+            </form>
+          </div>
+        </div>
       </div>
-    </div>
     <div class="position-absolute end-0 top-50 translate-middle-y me-3 d-none d-lg-flex align-items-center">
       <span class="text-white fw-bold me-3"><?php echo $name; ?></span>
       <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" class="m-0">

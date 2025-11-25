@@ -40,8 +40,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') 
 ?>
 
 <main class="mt-1 mb-1">
-        <div class="container login-container">
-            <div class="row justify-content-center align-items-center min-vh-100">
+            <div class="container login-container pt-4">
+                <div class="row justify-content-center">
                 <div class="col-md-8 col-lg-6">
 
                     <!-- DodajPredmet Card -->
