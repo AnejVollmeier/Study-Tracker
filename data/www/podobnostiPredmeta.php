@@ -24,11 +24,42 @@ if (!$predmet) {
 
 $errors_brisiPoglavje = [];
 $success_brisiPoglavje = '';
-
 $errors_dodajPoglavje = [];
 $success_dodajPoglavje = '';
+$errors_casUcenja = [];
+$success_casUcenja = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    if (isset($_POST['action']) && $_POST['action'] === 'add_cas_ucenja' && isset($_POST['poglavje_id'])) {
+        $poglavjeId = (int)$_POST['poglavje_id'];
+        $datum = $_POST['datum'] ?? '';
+        $casUcenja = $_POST['cas_ucenja'] ?? '';
+
+        $checkQuery = "SELECT 1 FROM poglavje WHERE id_poglavja = ? AND TK_predmet = ?";
+        $checkStmt = $pdo->prepare($checkQuery);
+        $checkStmt->execute([$poglavjeId, $predmetId]);
+
+        if (!$checkStmt->fetch()) {
+            $errors_casUcenja[] = 'Poglavje ne obstaja ali ne pripada temu predmetu.';
+        } elseif (empty($datum)) {
+            $errors_casUcenja[] = 'Prosimo, izberite datum.';
+        } elseif (empty($casUcenja) || (int)$casUcenja < 1) {
+            $errors_casUcenja[] = 'Čas učenja mora biti vsaj 1 minuta.';
+        } else {
+            $zacetekDatetime = $datum . ' ' . date('H:i:s');
+
+            $insertQuery = "INSERT INTO seja (zacetek, trajanje_min, TK_osebe, TK_predmeta, TK_poglavje) VALUES (?, ?, ?, ?, ?)";
+            $insertStmt = $pdo->prepare($insertQuery);
+
+            if ($insertStmt->execute([$zacetekDatetime, (int)$casUcenja, $userId, $predmetId, $poglavjeId])) {
+                header("Location: podobnostiPredmeta.php?id=" . $predmetId . "&cas_added=1");
+                exit();
+            } else {
+                $errors_casUcenja[] = 'Napaka pri shranjevanju časa učenja.';
+            }
+        }
+    }
 
     if (isset($_POST['action']) && $_POST['action'] === 'delete_predmet' && isset($_POST['predmet_id'])) {
 
@@ -38,6 +69,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $checkPredmet->execute([$predmetIdPost, $userId]);
 
         if ($checkPredmet->fetch()) {
+
+            $delSeje = $pdo->prepare("DELETE FROM seja WHERE TK_predmeta = ?");
+            $delSeje->execute([$predmetIdPost]);
+
             $delPoglavja = $pdo->prepare("DELETE FROM poglavje WHERE TK_predmet = ?");
             $delPoglavja->execute([$predmetIdPost]);
 
@@ -94,6 +129,10 @@ if (isset($_GET['del']) && $_GET['del'] == '1') {
     $success_brisiPoglavje = 'Poglavje je bilo uspešno odstranjeno.';
 }
 
+if (isset($_GET['cas_added']) && $_GET['cas_added'] == '1') {
+    $success_casUcenja = 'Čas učenja je bil uspešno dodan.';
+}
+
 $query1 = "SELECT * FROM poglavje WHERE TK_predmet = ? ORDER BY datum_ustanovitve ASC";
 $stmtPoglavja = $pdo->prepare($query1);
 $stmtPoglavja->execute([$predmetId]);
@@ -125,9 +164,14 @@ require_once("header2.php");
                             </a>
                         </div>
 
-                        <!-- TODO: GRAF -->
-                        <div>
-                            <h1>TUKAJ BO GRAF</h1>
+                        <!-- GRAF -->
+                        <div class="mt-4 d-flex justify-content-center mb-4">
+                            <div class="border rounded p-4 shadow-sm" style="width: 90%;">
+                                <h2 class="fw-bold text-center text-primary mb-3">Graf učenja po poglavjih</h2>
+                                <div style="position: relative; height: 400px;">
+                                    <canvas id="studyChart" data-predmet="<?php echo $predmetId; ?>"></canvas>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- SEZNAM POGLAVIJ -->
@@ -159,14 +203,89 @@ require_once("header2.php");
                                             <span class="fs-5">
                                                 <?php echo htmlspecialchars($row['ime']); ?>
                                             </span>
-
-                                            <form method="post" class="m-0">
-                                                <input type="hidden" name="action" value="delete">
-                                                <input type="hidden" name="poglavje_id" value="<?php echo (int)$row['id_poglavja']; ?>">
-                                                <button type="submit" class="btn btn-danger btn-sm">
-                                                    <i class="bi bi-trash"></i> Odstrani
+                                            <div class="d-flex gap-2">
+                                                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#grafPoglavjeModal<?php echo (int)$row['id_poglavja']; ?>">
+                                                    <i class="bi bi-graph-up"></i> Graf
                                                 </button>
-                                            </form>
+                                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#casUcenjaModal<?php echo (int)$row['id_poglavja']; ?>">
+                                                    <i class="bi bi-alarm"></i> Čas učenja
+                                                </button>
+                                                <form method="post" class="m-0">
+                                                    <input type="hidden" name="action" value="delete">
+                                                    <input type="hidden" name="poglavje_id" value="<?php echo (int)$row['id_poglavja']; ?>">
+                                                    <button type="submit" class="btn btn-danger btn-sm">
+                                                        <i class="bi bi-trash"></i> Odstrani
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+
+                                        <!-- Čas učenja -->
+                                        <div class="modal fade" id="casUcenjaModal<?php echo (int)$row['id_poglavja']; ?>" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-primary text-white">
+                                                        <h5 class="modal-title">Dodaj čas učenja</h5>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <form method="post" class="modal-form">
+                                                        <div class="modal-body">
+                                                            <input type="hidden" name="action" value="add_cas_ucenja">
+                                                            <input type="hidden" name="poglavje_id" value="<?php echo (int)$row['id_poglavja']; ?>">
+
+                                                            <?php if (!empty($errors_casUcenja)): ?>
+                                                                <div class="alert alert-danger alert-dismissible mb-3">
+                                                                    <ul class="mb-0">
+                                                                        <?php foreach ($errors_casUcenja as $err): ?>
+                                                                            <li><?php echo htmlspecialchars($err); ?></li>
+                                                                        <?php endforeach; ?>
+                                                                    </ul>
+                                                                </div>
+                                                            <?php endif; ?>
+
+                                                            <?php if ($success_casUcenja): ?>
+                                                                <div class="alert alert-success alert-dismissible mb-3">
+                                                                    <?php echo htmlspecialchars($success_casUcenja); ?>
+                                                                </div>
+                                                            <?php endif; ?>
+
+                                                            <div class="mb-3">
+                                                                <label for="datum_<?php echo (int)$row['id_poglavja']; ?>" class="form-label">Datum:</label>
+                                                                <input type="date" class="form-control" id="datum_<?php echo (int)$row['id_poglavja']; ?>" name="datum" required>
+                                                            </div>
+
+                                                            <div class="mb-3">
+                                                                <label for="cas_<?php echo (int)$row['id_poglavja']; ?>" class="form-label">Čas učenja (minutah):</label>
+                                                                <input type="number" class="form-control" id="cas_<?php echo (int)$row['id_poglavja']; ?>" name="cas_ucenja" min="1" placeholder="0" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Prekliči</button>
+                                                            <button type="submit" class="btn btn-primary">Dodaj</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Modal za graf poglavja -->
+                                        <div class="modal fade" id="grafPoglavjeModal<?php echo (int)$row['id_poglavja']; ?>" tabindex="-1" aria-hidden="true" data-poglavje-id="<?php echo (int)$row['id_poglavja']; ?>">
+                                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-success text-white">
+                                                        <h5 class="modal-title">Graf učenja - <?php echo htmlspecialchars($row['ime']); ?></h5>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div style="position: relative; height: 400px;">
+                                                            <canvas id="poglavjeChart<?php echo (int)$row['id_poglavja']; ?>"></canvas>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zapri</button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     <?php endforeach; ?>
 
@@ -250,6 +369,15 @@ require_once("header2.php");
 
 <?php require_once("footer.html"); ?>
 
+<!-- Chart.js Kniznica -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Graf  -->
+<script src="graf.js"></script>
+
+<!-- Graf Poglavje  -->
+<script src="graf_poglavje.js"></script>
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const alerts = document.querySelectorAll('#errorAlert, #successAlert');
@@ -267,6 +395,7 @@ require_once("header2.php");
             const url = new URL(window.location.href);
             url.searchParams.delete('add');
             url.searchParams.delete('del');
+            url.searchParams.delete('cas_added');
 
             window.history.replaceState({}, '', url);
 
