@@ -346,7 +346,32 @@ require_once("header2.php");
 
                             </div>
                         </div>
+                        <div class="d-flex justify-content-center align-items-center mb-4">
+                            <div class="border rounded p-4 shadow-sm" style="width: 50%;">
 
+                                <h2 class="fw-bold text-center text-primary mb-4">
+                                    Izvezi poglavja
+                                </h2>
+
+                                <div class="d-flex gap-3 justify-content-center">
+                                    <form method="post" action="izvozi.php" style="display:inline;">
+                                        <input type="hidden" name="predmet_id" value="<?php echo (int)$predmetId; ?>">
+                                        <input type="hidden" name="format" value="excel">
+                                        <button type="submit" class="btn btn-danger text-white fw-bold">
+                                            <i class="bi bi-file-earmark-spreadsheet me-2"></i>Excel
+                                        </button>
+                                    </form>
+
+                                    <form method="post" action="izvozi.php" style="display:inline;">
+                                        <input type="hidden" name="predmet_id" value="<?php echo (int)$predmetId; ?>">
+                                        <input type="hidden" name="format" value="pdf">
+                                        <button type="submit" class="btn btn-warning text-white fw-bold">
+                                            <i class="bi bi-file-earmark-pdf me-2"></i>PDF
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                         <!-- IZBRIŠI PREDMET -->
                         <div class="text-center fs-5 m-5">
                             <form method="post" class="m-0">
