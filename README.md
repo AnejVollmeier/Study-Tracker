@@ -1,7 +1,5 @@
 # Study-Tracker
 
-Spletna aplikacija za učinkovito spremljanje učnih aktivnosti in organizacijo študijskih obveznosti.
-
 ## Opis projekta
 
 Study-Tracker je osebni učni asistent, ki omogoča študentom enostavno beleženje učnih sej, spremljanje napredka po predmetih in časovnih obdobjih ter pregled statistike učenja. Aplikacija vključuje motivacijske citate, avtomatska e-poštna obvestila in možnost izvoza podatkov v PDF in Excel format.
