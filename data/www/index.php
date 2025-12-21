@@ -47,7 +47,7 @@ if (isset($_SESSION['user_id'])) {
                     </div>
                 </div>
             </div>
-            <div class="carousel-wrapper">
+            <div class="carousel-wrapper" style="max-width: 65%; margin: 0 auto;">
                 <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-indicators">
                         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -57,23 +57,23 @@ if (isset($_SESSION['user_id'])) {
 
                     <div class="carousel-inner">
                         <div class="carousel-item active">
-                            <img src="./images/knjige_img.avif" class="d-block w-100" alt="...">
+                            <img src="./images/Predmeti_img.png" class="d-block w-100" alt="..." style="object-fit: contain; max-height: 500px;">
                         </div>
                         <div class="carousel-item">
-                            <img src="./images/kniga_img1.jpeg" class="d-block w-100" alt="...">
+                            <img src="./images/Graf_vseg_poglavi_img.png" class="d-block w-100" alt="..." style="object-fit: contain; max-height: 500px;">
                         </div>
                         <div class="carousel-item">
-                            <img src="./images/knjige_img.avif" class="d-block w-100" alt="...">
+                            <img src="./images/Graf_poglavja_img.png" class="d-block w-100" alt="..." style="object-fit: contain; max-height: 500px;">
                         </div>
                     </div>
 
                     <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: invert(1);"></span>
                         <span class="visually-hidden">Prejšnja</span>
                     </button>
 
                     <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="carousel-control-next-icon" aria-hidden="true" style="filter: invert(1);"></span>
                         <span class="visually-hidden">Naslednja</span>
                     </button>
                 </div>
