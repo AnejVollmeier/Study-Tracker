@@ -4,20 +4,8 @@
  * Preverja, kateri izpiti so čez 2 dni in pošilja opomnike uporabnikom
  */
 
-// Nastavi pot do DB konfiguracije
-$host = 'podatkovna-baza';
-$dbname = 'StudyTracker';
-$user = 'root';
-$pass = 'superVarnoGeslo';
-
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    error_log("Napaka pri povezavi na bazo v cron job: " . $e->getMessage());
-    exit(1);
-}
-
+// Uporabi obstoječo DB konfiguracijo
+require_once('/var/www/html/db.php');
 require_once('/var/www/html/sendEmail.php');
 
 // Izračunaj datum čez 2 dni

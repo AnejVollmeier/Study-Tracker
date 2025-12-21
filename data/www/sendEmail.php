@@ -1,4 +1,8 @@
 <?php
+// Konstante za SMTP komunikacijo
+define('SMTP_BUFFER_SIZE', 512);
+define('SMTP_TIMEOUT', 10);
+
 /**
  * Pošlje email preko SMTP strežnika (Inbucket)
  * 
@@ -14,14 +18,14 @@ function sendEmail($to, $subject, $htmlBody) {
     
     try {
         // Odpri SMTP povezavo
-        $socket = @fsockopen($smtpHost, $smtpPort, $errno, $errstr, 10);
+        $socket = fsockopen($smtpHost, $smtpPort, $errno, $errstr, SMTP_TIMEOUT);
         if (!$socket) {
             error_log("SMTP connection failed: $errstr ($errno)");
             return false;
         }
         
         // Preberi odgovor strežnika
-        $response = fgets($socket, 512);
+        $response = fgets($socket, SMTP_BUFFER_SIZE);
         if (substr($response, 0, 3) != '220') {
             error_log("SMTP Error: " . $response);
             fclose($socket);
@@ -30,16 +34,16 @@ function sendEmail($to, $subject, $htmlBody) {
         
         // EHLO
         fputs($socket, "EHLO studytracker.local\r\n");
-        $response = fgets($socket, 512);
+        $response = fgets($socket, SMTP_BUFFER_SIZE);
         
         // Preberi vse EHLO odgovore (multiline)
         while (substr($response, 3, 1) == '-') {
-            $response = fgets($socket, 512);
+            $response = fgets($socket, SMTP_BUFFER_SIZE);
         }
         
         // MAIL FROM
         fputs($socket, "MAIL FROM: <$from>\r\n");
-        $response = fgets($socket, 512);
+        $response = fgets($socket, SMTP_BUFFER_SIZE);
         if (substr($response, 0, 3) != '250') {
             error_log("SMTP MAIL FROM Error: " . $response);
             fclose($socket);
@@ -48,7 +52,7 @@ function sendEmail($to, $subject, $htmlBody) {
         
         // RCPT TO
         fputs($socket, "RCPT TO: <$to>\r\n");
-        $response = fgets($socket, 512);
+        $response = fgets($socket, SMTP_BUFFER_SIZE);
         if (substr($response, 0, 3) != '250') {
             error_log("SMTP RCPT TO Error: " . $response);
             fclose($socket);
@@ -57,7 +61,7 @@ function sendEmail($to, $subject, $htmlBody) {
         
         // DATA
         fputs($socket, "DATA\r\n");
-        $response = fgets($socket, 512);
+        $response = fgets($socket, SMTP_BUFFER_SIZE);
         if (substr($response, 0, 3) != '354') {
             error_log("SMTP DATA Error: " . $response);
             fclose($socket);
@@ -75,7 +79,7 @@ function sendEmail($to, $subject, $htmlBody) {
         $message = $headers . "\r\n" . $htmlBody . "\r\n.\r\n";
         
         fputs($socket, $message);
-        $response = fgets($socket, 512);
+        $response = fgets($socket, SMTP_BUFFER_SIZE);
         if (substr($response, 0, 3) != '250') {
             error_log("SMTP Message Error: " . $response);
             fclose($socket);
