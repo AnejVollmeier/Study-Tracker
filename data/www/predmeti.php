@@ -1,13 +1,30 @@
 <?php
 $pageTitle = 'Predmeti';
 require_once("header2.php");
-?>
 
-<?php
-
+require_once("lepe_misli.php");
+$quote = fetchQuote();
 ?>
 
 <main class="mt-1 mb-1">
+
+    <!-- Lepe misli -->
+    <?php if ($quote): ?>
+        <div class="container mt-4 mb-4">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="card shadow-lg border-0 bg-primary">
+                        <div class="card-body text-white text-center py-5">
+                            <i class="bi bi-lightbulb-fill fs-1 mb-3" style="opacity: 0.9;"></i>
+                            <h4 class="fw-bold mb-3" style="font-style: italic;">"<?php echo htmlspecialchars($quote['quote']); ?>"</h4>
+                            <p class="mb-0 opacity-75">- <?php echo htmlspecialchars($quote['author']); ?></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+
     <div class="container login-container pt-4">
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6">
