@@ -29,3 +29,35 @@ services:
       - "127.0.0.1:8001:80" # Poveže notranja vrata 80 na zunanja 8001, kar omogoča dostop do phpMyAdmin preko brskalnika na http://localhost:8001 (vrata na levi strani dvopičja lahko poljubno spremenimo), prijavite pa se z uporabniškim imenom "root" ter geslom, ki je nastavljeno zraven MYSQL_ROOT_PASSWORD . Predpona "127.0.0.1" spletni strežnik zaščiti, da se nanj ni možno povezati iz kakšne druge naprave na omrežju, na katerega je računalnik priklopljen
     environment:
       PMA_HOST: podatkovna-baza # Ime MySQL zabojnika, na katerega se phpMyAdmin poveže. To je ime MySQL zabojnika ('mysql-pb'), ki ga uporablja Docker za omrežno povezovanje med zabojniki.
+
+  inbucket:
+    hostname: inbucket # Ime zabojnika za Inbucket SMTP test strežnik
+    image: inbucket/inbucket:latest # Docker slika za Inbucket - testni email strežnik
+    restart: unless-stopped # Omogoča, da se zabojnik ponovno zažene v primeru napake, razen če ga uporabnik ročno ustavi
+    ports:
+      - "127.0.0.1:8002:9000" # Web vmesnik za ogled emailov na http://localhost:8002
+      - "127.0.0.1:2500:2500" # SMTP port za pošiljanje emailov
+    environment:
+      INBUCKET_SMTP_ADDR: 0.0.0.0:2500 # SMTP naslov
+      INBUCKET_WEB_ADDR: 0.0.0.0:9000 # Web vmesnik naslov
+
+  email-cron:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM php:cli
+        RUN docker-php-ext-install pdo pdo_mysql
+        RUN apt-get update && apt-get install -y cron && rm -rf /var/lib/apt/lists/*
+    restart: unless-stopped
+    volumes:
+      - ./data/www:/var/www/html/
+    command: >
+      sh -c "echo '*/5 * * * * php /var/www/html/checkExamReminders.php >> /var/log/cron.log 2>&1' > /etc/cron.d/email-cron &&
+             chmod 0644 /etc/cron.d/email-cron &&
+             crontab /etc/cron.d/email-cron &&
+             touch /var/log/cron.log &&
+             cron &&
+             tail -f /var/log/cron.log"
+    depends_on:
+      - mysql
+      - inbucket

@@ -1,6 +1,7 @@
 <?php
 $pageTitle = 'Dodaj predmet';
 require_once("header2.php");
+require_once("sendEmail.php");
 ?>
 
 <?php
@@ -31,6 +32,18 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') 
     if (empty($errors)) {
         $stmt = $pdo->prepare("INSERT INTO predmet (TK_oseba, ime, datum_zakljucka) VALUES (?,?,?)");
         $stmt->execute([$_SESSION['user_id'], $ime_predmeta, $datum_izpita]);
+
+        // Preveri, ali uporabnik želi prejemati emaile
+        $userStmt = $pdo->prepare("SELECT o.email, t.naziv FROM oseba o JOIN tip_osebe t ON o.TK_tip_osebe = t.id_tip_osebe WHERE o.id_osebe = ?");
+        $userStmt->execute([$_SESSION['user_id']]);
+        $userData = $userStmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($userData && $userData['naziv'] === 'email_yes' && !empty($userData['email'])) {
+            // Pošlji email o ustvarjenem predmetu
+            $emailSubject = "Nov predmet: " . $ime_predmeta;
+            $emailBody = generateSubjectCreatedEmail($ime_predmeta, $datum_izpita);
+            sendEmail($userData['email'], $emailSubject, $emailBody);
+        }
 
         $success = 'Predmet je bil uspešno dodan.';
         $ime_predmeta = '';
